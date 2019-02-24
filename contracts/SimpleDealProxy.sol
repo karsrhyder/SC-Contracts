@@ -86,7 +86,7 @@ contract SimpleDealProxy is Ownable {
         Data = new SimpleDealData(this);
 
         /// @notice The data contract is created
-        Logic = new SimpleDealLogic(this);
+        Logic = new SimpleDealLogic(this, Data);
 
         /// @notice SWT token is added
         token = IMiniMeToken(_token);
@@ -113,13 +113,16 @@ contract SimpleDealProxy is Ownable {
         Logic = SimpleDealLogic(_logiccontract);
     }
 
-    function receiveApproval(address _msgsender, uint _amount, address _fromcontract, bytes _extraData) public {
-        require(address(Logic).call(_extraData), "Error calling extraData");
-        emit ReceivedApproval(_msgsender, _amount, _fromcontract, _extraData);
-    }
+    // function receiveApproval(address _msgsender, uint _amount, address _fromcontract, bytes _extraData) public {
+    //     //require(address(Logic).call(_extraData), "Error calling extraData");
+    //     require(Logic.delegatecall(bytes4(keccak256(_extraData)))); 
+    //     emit ReceivedApproval(_msgsender, _amount, _fromcontract, _extraData);
+    // }
 
     function onTokenTransfer(address _msgsender, uint256 _amount, bytes _extraData) public {
         require(address(Logic).call(_extraData), "Error calling extraData");
+        //_e.delegatecall(bytes4(keccak256("setN(uint256)")), _n);
+        //require(address(Logic).delegatecall(bytes4(keccak256(_extraData)))); 
         emit OnTokenTransfer(_msgsender, _amount, _extraData);
     }
 

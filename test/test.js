@@ -44,6 +44,20 @@ contract('SimpleDealProxy', (accounts) => {
             var balance = await swtToken.balanceOf(provider);
             assert.equal(balance.toNumber(), 100, "Provider balance not correct after swt minting");
         });
+
+        it("should see correct token balance Seeker account", async function () {
+            var balance = await swtToken.balanceOf(seeker);
+            console.log(balance.toNumber());
+            //assert.equal(balance.toNumber(), 69700000000000000000, "Seeker balance not correct");
+        });
+
+        it("should see correct token balance provider account", async function () {
+            var balance = await swtToken.balanceOf(provider);
+            console.log(balance.toNumber());
+            //assert.equal(balance.toNumber(), 69700000000000000000, "Seeker balance not correct");
+        });
+
+        
     });
 
     describe('Staging: SimpleDealProxy Deploy', function() {
@@ -111,15 +125,15 @@ contract('SimpleDealProxy', (accounts) => {
             const itemBudgetWei = 30;
             const totalSum = parseInt(itemBudgetWei) + parseInt(hashtagFee / 2);
 
-            currentItemHash = metadataHash.bytes32;
+            currentItemHash = web3.utils.fromAscii(metadataHash);
 
             console.log(currentItemHash)
 
             var simpleDealContract = await new web3.eth.Contract(SimpleDealLogic.abi, logicContract);
-            const rawNewItem = simpleDealContract.methods.newItem(
+            const rawNewItem = await simpleDealContract.methods.newItem(
                 web3.utils.fromAscii("ItemHash"),
                 itemBudgetWei,
-                currentItemHash
+                web3.utils.fromAscii("ItemHash")
             ).encodeABI();
 
             const result = await swtToken.transferAndCall(
@@ -135,24 +149,29 @@ contract('SimpleDealProxy', (accounts) => {
             assert.isNotNull(result);
         });
 
-        // it("should see correct token balance Seeker account", async function () {
-        //     var balance = await swtToken.balanceOf(seeker);
-        //     assert.equal(balance.toNumber(), 69700000000000000000, "Seeker balance not correct");
-        // });
+        it("should see correct token balance Seeker account", async function () {
+            var balance = await swtToken.balanceOf(seeker);
+            console.log(balance.toNumber());
+            //assert.equal(balance.toNumber(), 69700000000000000000, "Seeker balance not correct");
+        });
 
-        // it("should see correct token balance Hashtag account", async function () {
-        //     var balance = await swtToken.balanceOf(hashtagContract.address);
-        //     assert.equal(balance.toNumber(), 30000000000000000000, "Hashtag balance not correct");
-        // });
+        it("should see correct token balance Hashtag account", async function () {
+            var balance = await swtToken.balanceOf(hashtagContract.address);
+            console.log(balance.toNumber());
+            //assert.equal(balance.toNumber(), 30000000000000000000, "Hashtag balance not correct");
+        });
 
-        // it("should see correct token balance Maintainer account", async function () {
-        //     var balance = await swtToken.balanceOf(maintainer);
-        //     assert.equal(balance.toNumber(), 300000000000000000, "Maintainer balance not correct");
-        // });
+        it("should see correct token balance Maintainer account", async function () {
+            var balance = await swtToken.balanceOf(maintainer);
+            console.log(balance.toNumber());
+            //assert.equal(balance.toNumber(), 300000000000000000, "Maintainer balance not correct");
+        });
 
-        // it("should find the Item on the Hashtag", async function () {
-        //     var result = await hashtagContract.readItemData(currentItemHash);
-        //     assert.equal(result[0].toNumber(), 0, "Item creation error");
-        // });
+        it("should find the Item on the Hashtag", async function () {
+            var simpleDealDataInstance = await new web3.eth.Contract(SimpleDealData.abi, dataContract);
+            var result = await simpleDealDataInstance.methods.readItemData(web3.utils.fromAscii("ItemHash")).call();
+            console.log(result);
+            //assert.equal(result[0].toNumber(), 0, "Item creation error");
+        });
     });
 });
