@@ -22,7 +22,6 @@ contract('SimpleDealProxy', (accounts) => {
     var itemIdHash = {};
     var currentItemHash; // the itemHash the test is currently working with
 
-
     describe('Staging: Token Deploy', function () {
         it("should deploy SWT Bridged token contract", async function () {
             swtToken = await ERC677BridgeToken.new(
